@@ -58,6 +58,7 @@ public class ClientGUI extends JFrame implements PropertyChangeListener {
 		send = new JButton("Send");
 		panel.add(send, BorderLayout.SOUTH);
 		send.addActionListener(new SendMessageAction());
+		send.setEnabled(false);
 		
 		return panel;
 	}
@@ -84,6 +85,7 @@ public class ClientGUI extends JFrame implements PropertyChangeListener {
 		connect.addActionListener(new ConnectAction(this));
 		
 		disconnect = new JButton("Disconnect");
+		disconnect.setEnabled(false);
 		panel.add(disconnect);
 		
 		return panel;
@@ -108,6 +110,9 @@ public class ClientGUI extends JFrame implements PropertyChangeListener {
 				Thread client = new Thread(listener);
 				client.start();
 				
+				disconnect.setEnabled(true);
+				connect.setEnabled(false);
+				send.setEnabled(true);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -123,6 +128,8 @@ public class ClientGUI extends JFrame implements PropertyChangeListener {
 				oos = new ObjectOutputStream(os);
 				oos.writeObject(message.getText());
 				
+				board.append("Me: "+ message.getText() +"\n");
+				message.setText("");
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -133,7 +140,7 @@ public class ClientGUI extends JFrame implements PropertyChangeListener {
 	public void propertyChange(PropertyChangeEvent event) {
 		try {
 			ObjectInputStream ois = (ObjectInputStream) event.getNewValue();
-			board.setText((String) ois.readObject());
+			board.append("Client: "+ (String) ois.readObject() +"\n");
 		} catch (ClassNotFoundException | IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

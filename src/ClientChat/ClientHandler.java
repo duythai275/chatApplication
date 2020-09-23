@@ -34,6 +34,16 @@ public class ClientHandler implements Runnable, PropertyChangeListener {
 		
 		client1.start();
 		client2.start();
+		
+		try {
+			oos1 = new ObjectOutputStream(socket1.getOutputStream());
+			oos1.writeObject((String) "Connected!!!");
+			oos2 = new ObjectOutputStream(socket2.getOutputStream());
+			oos2.writeObject((String) "Connected!!!");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public void propertyChange(PropertyChangeEvent event) {
