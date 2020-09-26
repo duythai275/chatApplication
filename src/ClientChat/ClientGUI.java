@@ -32,8 +32,11 @@ public class ClientGUI extends JFrame implements PropertyChangeListener {
 	private ObjectOutputStream oos = null;
 	private InputListener listener;
 	
+	Thread client;
+	
 	public ClientGUI() {
 		setTitle("GUI Message Client");
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLayout(new BorderLayout(10, 10));
 		
 		JPanel northPanel = createNorthPanel();
@@ -87,6 +90,7 @@ public class ClientGUI extends JFrame implements PropertyChangeListener {
 		disconnect = new JButton("Disconnect");
 		disconnect.setEnabled(false);
 		panel.add(disconnect);
+		disconnect.addActionListener(new DisconnectAction());
 		
 		return panel;
 	}
@@ -107,12 +111,29 @@ public class ClientGUI extends JFrame implements PropertyChangeListener {
 				listener = new InputListener(socket, 0);
 				listener.addListener(this.clientGUI);
 				
-				Thread client = new Thread(listener);
+				client = new Thread(listener);
 				client.start();
 				
 				disconnect.setEnabled(true);
 				connect.setEnabled(false);
 				send.setEnabled(true);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	private class DisconnectAction implements ActionListener {
+		public void actionPerformed(ActionEvent event) {
+			try {
+				OutputStream os = socket.getOutputStream();
+				oos = new ObjectOutputStream(os);
+				oos.writeObject("DISCONNECTED!!!");
+				
+				disconnect.setEnabled(false);
+				connect.setEnabled(true);
+				send.setEnabled(false);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -138,12 +159,7 @@ public class ClientGUI extends JFrame implements PropertyChangeListener {
 	}
 	
 	public void propertyChange(PropertyChangeEvent event) {
-		try {
-			ObjectInputStream ois = (ObjectInputStream) event.getNewValue();
-			board.append("Client: "+ (String) ois.readObject() +"\n");
-		} catch (ClassNotFoundException | IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		String msg = (String) event.getNewValue();
+		board.append("Client: "+ msg +"\n");
 	}
 }
