@@ -15,7 +15,7 @@ public class InputListener implements Runnable {
 	private ObjectInputStream ois = null;
 	private boolean connect = true;
 	
-	private List<PropertyChangeListener> listeners = new ArrayList<>();;
+	private List<PropertyChangeListener> listeners = new ArrayList<>();
 	
 	public InputListener(Socket socket, int number) {
 		this.socket = socket;
@@ -30,7 +30,6 @@ public class InputListener implements Runnable {
 		try {
 			ois.close();
 			socket.close();
-		
 			connect = false;
 		} catch(IOException e) {
 			// TODO Auto-generated catch block

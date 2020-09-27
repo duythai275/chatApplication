@@ -7,20 +7,24 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 public class ClientGUI extends JFrame implements PropertyChangeListener {
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	
 	private JButton connect;
 	private JButton disconnect;
@@ -160,6 +164,40 @@ public class ClientGUI extends JFrame implements PropertyChangeListener {
 	
 	public void propertyChange(PropertyChangeEvent event) {
 		String msg = (String) event.getNewValue();
-		board.append("Client: "+ msg +"\n");
+		if ( msg.equals("STAY?") ) {
+			int n = JOptionPane.showConfirmDialog(
+				    this,
+				    "Would you like to wait for another connection?",
+				    "Client DISCONNECTED!!!",
+				    JOptionPane.YES_NO_OPTION);
+			System.out.println(n);
+			
+			
+			try {
+				OutputStream os = socket.getOutputStream();
+				oos = new ObjectOutputStream(os);
+				oos.writeObject("DISCONNECTED!!!");
+				
+				if ( n > 0 ) {
+					disconnect.setEnabled(false);
+					connect.setEnabled(true);
+					send.setEnabled(false);
+				} else {
+					socket = new Socket("localhost",3333);
+					
+					listener = new InputListener(socket, 0);
+					listener.addListener(this);
+					
+					client = new Thread(listener);
+					client.start();
+				}
+				
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else {
+			board.append("Client: "+ msg +"\n");
+		}
 	}
 }

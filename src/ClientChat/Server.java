@@ -24,28 +24,11 @@ public class Server {
 			try {
 				socket = serverSocket.accept();
 				socketList.add(socket);
-				//TEST
-				System.out.println("A new Socket");
 				
 				if ( socketList.size() == 2 ) {
 					clientHandler = new ClientHandler(socketList.get(0), socketList.get(1));
 					socketList.clear();
-					
-					Thread server = new Thread(clientHandler);
-					server.start();
-					
-					while(server.isAlive());
-					System.out.println("A Server STOP"); 
-				} else if ( socketList.size() == 1 && clientHandler != null ) {
-					// Should have a list of ClientHandler
-					// Check if in any ClientHandler only 1 thread run -> add new socket to ClientHandler
-					if ( clientHandler.isWaiting() ) {
-						//TEST
-						System.out.println("ADDING a Socket");
-						clientHandler.addSocket(socket);
-						socketList.clear();
-					}
-				}
+				} 
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
